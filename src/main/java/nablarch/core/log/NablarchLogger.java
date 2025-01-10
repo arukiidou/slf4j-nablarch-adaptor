@@ -1,5 +1,6 @@
 package nablarch.core.log;
 
+import org.slf4j.event.Level;
 import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MarkerIgnoringBase;
 import org.slf4j.helpers.MessageFormatter;
@@ -24,6 +25,17 @@ public class NablarchLogger extends MarkerIgnoringBase {
 	 */
 	public NablarchLogger(final Logger logger) {
 		this.logger = logger;
+	}
+
+	@Override
+	public boolean isEnabledForLevel(Level level) {
+		return switch (level) {
+			case ERROR -> isErrorEnabled();
+			case WARN -> isWarnEnabled();
+			case INFO -> isInfoEnabled();
+			case DEBUG -> isDebugEnabled();
+			case TRACE -> isTraceEnabled();
+		};
 	}
 
 	@Override
