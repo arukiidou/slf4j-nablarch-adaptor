@@ -8,9 +8,11 @@ import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -37,25 +39,18 @@ public class NablarchLoggerTest {
 			}
 		}
 
-		interface IsEnabled {
-			boolean invoke(org.slf4j.Logger logger);
-		}
+		interface IsEnabled extends Predicate<Logger> {}
 
 		private void isEnabledTest(IsEnabled invoker, String... parameters) {
 			for (IsEnabledTestParameter parameter : IsEnabledTestParameter.of(parameters)) {
 				final org.slf4j.Logger logger = LoggerFactory.getLogger(parameter.name);
-				assertEquals(parameter.expected, invoker.invoke(logger));
+				assertEquals(parameter.expected, invoker.test(logger));
 			}
 		}
 
 		@Test
 		public void isErrorEnabled() {
-			IsEnabled invoker = new IsEnabled() {
-				@Override
-				public boolean invoke(org.slf4j.Logger logger) {
-					return logger.isErrorEnabled();
-				}
-			};
+			IsEnabled invoker = Logger::isErrorEnabled;
 			isEnabledTest(invoker,
 					"error | true",
 					"warn  | true",
@@ -66,12 +61,7 @@ public class NablarchLoggerTest {
 
 		@Test
 		public void isWarnEnabled() {
-			IsEnabled invoker = new IsEnabled() {
-				@Override
-				public boolean invoke(org.slf4j.Logger logger) {
-					return logger.isWarnEnabled();
-				}
-			};
+			IsEnabled invoker = Logger::isWarnEnabled;
 			isEnabledTest(invoker,
 					"error | false",
 					"warn  | true",
@@ -82,12 +72,7 @@ public class NablarchLoggerTest {
 
 		@Test
 		public void isInfoEnabled() {
-			IsEnabled invoker = new IsEnabled() {
-				@Override
-				public boolean invoke(org.slf4j.Logger logger) {
-					return logger.isInfoEnabled();
-				}
-			};
+			IsEnabled invoker = Logger::isInfoEnabled;
 			isEnabledTest(invoker,
 					"error | false",
 					"warn  | false",
@@ -98,12 +83,7 @@ public class NablarchLoggerTest {
 
 		@Test
 		public void isDebugEnabled() {
-			IsEnabled invoker = new IsEnabled() {
-				@Override
-				public boolean invoke(org.slf4j.Logger logger) {
-					return logger.isDebugEnabled();
-				}
-			};
+			IsEnabled invoker = Logger::isDebugEnabled;
 			isEnabledTest(invoker,
 					"error | false",
 					"warn  | false",
@@ -114,12 +94,7 @@ public class NablarchLoggerTest {
 
 		@Test
 		public void isTraceEnabled() {
-			IsEnabled invoker = new IsEnabled() {
-				@Override
-				public boolean invoke(Logger logger) {
-					return logger.isTraceEnabled();
-				}
-			};
+			IsEnabled invoker = Logger::isTraceEnabled;
 			isEnabledTest(invoker,
 					"error | false",
 					"warn  | false",
