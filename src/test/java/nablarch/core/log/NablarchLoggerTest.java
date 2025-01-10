@@ -102,6 +102,28 @@ public class NablarchLoggerTest {
 					"debug | false",
 					"trace | true");
 		}
+
+		private void isEnabledForLevelTest(Level level, IsEnabled expected){
+			IsEnabled invoker = logger -> logger.isEnabledForLevel(level);
+			final org.slf4j.Logger testLogger = LoggerFactory.getLogger(level.toString());
+
+			assertEquals(invoker.test(testLogger), expected.test(testLogger));
+		}
+
+		@Test
+		public void isEnabledForLevelError() { isEnabledForLevelTest(Level.ERROR, Logger::isErrorEnabled); }
+
+		@Test
+		public void isEnabledForLevelWarn() { isEnabledForLevelTest(Level.WARN, Logger::isWarnEnabled); }
+
+		@Test
+		public void isEnabledForLevelInfo() { isEnabledForLevelTest(Level.INFO, Logger::isInfoEnabled);	}
+
+		@Test
+		public void isEnabledForLevelDebug() { isEnabledForLevelTest(Level.DEBUG, Logger::isDebugEnabled); }
+
+		@Test
+		public void isEnabledForLevelTrace() { isEnabledForLevelTest(Level.TRACE, Logger::isTraceEnabled); }
 	}
 
 	public static abstract class Base {
